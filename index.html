@@ -1,7 +1,10 @@
 ﻿<html>
 <head>
     <title>PagesBuilder</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/jquery-ui.css"/>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="minified/themes/default.min.css" type="text/css" media="all" />
     <script type="text/javascript" src="minified/jquery.sceditor.bbcode.min.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
@@ -17,6 +20,21 @@
     </script>
 </head>
 <body>
-    <textarea style="width: 1200px; height: 1000px;display: none;"></textarea>
+<div role="tabpanel" style="width: 97%;">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#editor" aria-controls="editor" role="tab" data-toggle="tab">Editor</a></li>
+        <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="editor" style="text-align: center;">
+            <br/>
+            <textarea style="width: 1200px; height: 1000px;display: none;"></textarea>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="settings">
+            Settings tab
+        </div>
+    </div>
+</div>
+    
 </body>
 </html>
