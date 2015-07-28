@@ -16,6 +16,15 @@
             plugins: "xhtml",
             style: "minified/jquery.sceditor.default.min.css"
         });
+        $("#folderSelector").on("change", function () {
+            var files = $(this)[0].files;
+            //for (var i = 0; i < files.length; ++i) {
+            //    console.log(files[i].path);
+            //}
+            $("#currentWorkingFolder").val(files[0].path);
+            
+        });
+        $("#currentWorkingFolder").prop("readonly", true);
     });
     </script>
 </head>
@@ -31,7 +40,13 @@
             <textarea style="width: 1200px; height: 1000px;display: none;"></textarea>
         </div>
         <div role="tabpanel" class="tab-pane" id="settings">
-            Settings tab
+            <div class="form-group">
+                <label for="currentWorkingFolder">Current working folder</label>
+                <input type="email" class="form-control" id="currentWorkingFolder" placeholder="Current working folder">
+                <label for="folderSelector">Select folder</label>
+                <input type="file" id="folderSelector" nwdirectory>
+            </div>
+            
         </div>
     </div>
 </div>
