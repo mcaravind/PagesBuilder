@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="minified/themes/default.min.css" type="text/css" media="all" />
     <script type="text/javascript" src="minified/jquery.sceditor.bbcode.min.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
+    <style>
+    .disabledbutton {
+    pointer-events: none;
+    opacity: 0.4;
+}
+    </style>
     <script>
     $(function () {
         $("textarea").sceditor({
@@ -19,7 +25,14 @@
             $("#currentWorkingFolder").val(files[0].path);
         });
         $("#currentWorkingFolder").prop("readonly", true);
+        $("#divEditor").addClass('disabledbutton');
     });
+
+    function saveIframeContents() {
+        var iframe = document.getElementsByTagName("iframe")[0];
+        var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+        var iframeDocBody = iframeDocument.getElementsByTagName('body')[0];
+    }
     </script>
 </head>
 <body>
@@ -29,9 +42,13 @@
         <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
     </ul>
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active" id="editor" style="text-align: center;">
+        <div role="tabpanel" class="tab-pane active" id="editor">
             <br/>
-            <textarea style="width: 1200px; height: 600px;display: none;"></textarea>
+            <button id="btnSave" onclick="saveIframeContents()" class="btn btn-primary">Save</button>
+            <br/><br/>
+            <div id="divEditor">
+                <textarea style="width: 1200px; height: 600px;display: none;"></textarea>    
+            </div>
         </div>
         <div role="tabpanel" class="tab-pane" id="settings">
             <div class="form-group">
