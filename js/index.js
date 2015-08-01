@@ -40,5 +40,36 @@
         e.preventDefault();
         menu.popup(e.originalEvent.x, e.originalEvent.y);
     });
+    var json = '[{"title": "Node 1", "key": "1"},{"title": "Folder 2", "key": "2", "folder": true, "children": [{"title": "Node 2.1", "key": "3"},{"title": "Node 2.2", "key": "4"}]}]';
+    var arr = getTreeFromJson(json);
+    loadFullTree(arr);
 });
+
+function loadFullTree(tree) {
+    try {
+        var tree1 = $("#treeDiv").fancytree('getTree');
+        tree1.reload(tree);
+    } catch (ex) {
+        $("#treeDiv").fancytree({
+            source: tree
+        });
+    }
+}
+
+function getTreeFromJson(json) {
+    // preserve newlines, etc - use valid JSON
+    json = json.replace(/\\n/g, "\\n")
+        .replace(/\\'/g, "\\'")
+        .replace(/\\"/g, '\\"')
+        .replace(/\\&/g, "\\&")
+        .replace(/\\r/g, "\\r")
+        .replace(/\\t/g, "\\t")
+        .replace(/\\b/g, "\\b")
+        .replace(/\\f/g, "\\f");
+    // remove non-printable and other non-valid JSON chars
+    json = json.replace(/[\u0000-\u0019]+/g, "");
+    //console.log(json);
+    var arr = JSON.parse(json);
+    return arr;
+}
 
