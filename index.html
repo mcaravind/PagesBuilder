@@ -14,26 +14,6 @@
     opacity: 0.4;
 }
     </style>
-    <script>
-        $(function() {
-            $("textarea").sceditor({
-                plugins: "xhtml",
-                style: "minified/jquery.sceditor.default.min.css"
-            });
-            $("#folderSelector").on("change", function() {
-                var files = $(this)[0].files;
-                $("#currentWorkingFolder").val(files[0].path);
-            });
-            $("#currentWorkingFolder").prop("readonly", true);
-            $("#divEditor").addClass('disabledbutton');
-        });
-
-        function saveIframeContents() {
-            var iframe = document.getElementsByTagName("iframe")[0];
-            var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-            var iframeDocBody = iframeDocument.getElementsByTagName('body')[0];
-        }
-    </script>
     <script src="fancytree/jquery-ui.custom.js" type="text/javascript"></script>
     <link href="fancytree/skin-xp/ui.fancytree.css" rel="stylesheet" type="text/css">
     <script src="fancytree/jquery.fancytree.js" type="text/javascript"></script>
@@ -60,6 +40,7 @@
                 <label for="folderSelector">Select folder</label>
                 <input type="file" id="folderSelector" nwdirectory>
                 <div id="treeDiv"></div>
+                <textarea id="txtFiles"></textarea>
             </div>
         </div>
     </div>

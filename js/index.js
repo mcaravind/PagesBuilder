@@ -1,4 +1,46 @@
-﻿$(function () {
+﻿var fs = require('fs'),
+    path = require('path');
+var gui = require('nw.gui');
+
+function dirTree(filename) {
+    var stats = fs.lstatSync(filename),
+        info = {
+            title: filename,
+            key:filename,
+            path: filename,
+            name: path.basename(filename)
+        };
+
+    if (stats.isDirectory()) {
+        info.type = "folder";
+        info.children = fs.readdirSync(filename).map(function (child) {
+            return dirTree(filename + '\\' + child);
+        });
+    } else {
+        // Assuming it's a file. In real life it could be a symlink or
+        // something else!
+        info.type = "file";
+    }
+
+    return info;
+}
+
+$(function () {
+    $("textarea").sceditor({
+        plugins: "xhtml",
+        style: "minified/jquery.sceditor.default.min.css"
+    });
+    $("#folderSelector").on("change", function () {
+        var files = $(this)[0].files;
+        $("#currentWorkingFolder").val(files[0].path);
+        var pwd = files[0].path;
+        var dirJson = JSON.stringify(dirTree(pwd));
+        var arr = getTreeFromJson(dirJson);
+        loadFullTree(arr);
+        $("#divEditor").removeClass('disabledbutton');
+    });
+    $("#currentWorkingFolder").prop("readonly", true);
+    $("#divEditor").addClass('disabledbutton');
     function Menu(cutLabel, copyLabel, pasteLabel) {
         var gui = require('nw.gui')
           , menu = new gui.Menu()
@@ -40,9 +82,7 @@
         e.preventDefault();
         menu.popup(e.originalEvent.x, e.originalEvent.y);
     });
-    var json = '[{"title": "Node 1", "key": "1"},{"title": "Folder 2", "key": "2", "folder": true, "children": [{"title": "Node 2.1", "key": "3"},{"title": "Node 2.2", "key": "4"}]}]';
-    var arr = getTreeFromJson(json);
-    loadFullTree(arr);
+    
 });
 
 function loadFullTree(tree) {
@@ -73,3 +113,14 @@ function getTreeFromJson(json) {
     return arr;
 }
 
+function saveIframeContents() {
+    var iframe = document.getElementsByTagName("iframe")[0];
+    var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+    var iframeDocBody = iframeDocument.getElementsByTagName('body')[0];
+}
+
+function getDirectories(srcpath) {
+    return fs.readdirSync(srcpath).filter(function (file) {
+        return fs.statSync(path.join(srcpath, file)).isDirectory();
+    });
+}
