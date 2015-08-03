@@ -5,8 +5,8 @@ var gui = require('nw.gui');
 function dirTree(filename) {
     var stats = fs.lstatSync(filename),
         info = {
-            title: filename,
-            key:filename,
+            title: path.basename(filename),
+            key: path.basename(filename),
             path: filename,
             name: path.basename(filename)
         };
@@ -21,7 +21,6 @@ function dirTree(filename) {
         // something else!
         info.type = "file";
     }
-
     return info;
 }
 
@@ -89,9 +88,13 @@ function loadFullTree(tree) {
     try {
         var tree1 = $("#treeDiv").fancytree('getTree');
         tree1.reload(tree);
+        
     } catch (ex) {
         $("#treeDiv").fancytree({
-            source: tree
+            source: tree,
+            click: function (event, data) {
+                console.log(data.node.title);
+            }
         });
     }
 }
