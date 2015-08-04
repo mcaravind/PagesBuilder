@@ -6,7 +6,7 @@ function dirTree(filename) {
     var stats = fs.lstatSync(filename),
         info = {
             title: path.basename(filename),
-            key: path.basename(filename),
+            key: filename,
             path: filename,
             name: path.basename(filename)
         };
@@ -36,7 +36,6 @@ $(function () {
         var dirJson = JSON.stringify(dirTree(pwd));
         var arr = getTreeFromJson(dirJson);
         loadFullTree(arr);
-        $("#divEditor").removeClass('disabledbutton');
     });
     $("#currentWorkingFolder").prop("readonly", true);
     $("#divEditor").addClass('disabledbutton');
@@ -93,11 +92,26 @@ function loadFullTree(tree) {
         $("#treeDiv").fancytree({
             source: tree,
             click: function (event, data) {
-                console.log(data.node.title);
+                //console.log(data.node.title);
+                if (data.node.key.endsWith('.html') || (data.node.key.endsWith('.htm'))) {
+                    $("#divEditor").removeClass('disabledbutton');
+                    fs.readFile(data.node.key, 'utf8', function (err, htmlData) {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        $("textarea").sceditor('instance')[0].insert(htmlData);
+                    });
+                } else {
+                    $("#divEditor").addClass('disabledbutton');
+                }
             }
         });
     }
 }
+
+String.prototype.endsWith = function (suffix) {
+    return this.indexOf(suffix, this.length - suffix.length) !== -1;
+};
 
 function getTreeFromJson(json) {
     // preserve newlines, etc - use valid JSON
