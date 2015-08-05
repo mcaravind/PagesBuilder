@@ -25,10 +25,12 @@ function dirTree(filename) {
 }
 
 $(function () {
+    window.editorCreated = 0;
     $("textarea").sceditor({
         plugins: "xhtml",
         style: "minified/jquery.sceditor.default.min.css"
     });
+    
     $("#folderSelector").on("change", function () {
         var files = $(this)[0].files;
         $("#currentWorkingFolder").val(files[0].path);
@@ -93,20 +95,34 @@ function loadFullTree(tree) {
             source: tree,
             click: function (event, data) {
                 //console.log(data.node.title);
+                window.currFileName = data.node.key;
                 if (data.node.key.endsWith('.html') || (data.node.key.endsWith('.htm'))) {
                     $("#divEditor").removeClass('disabledbutton');
-                    fs.readFile(data.node.key, 'utf8', function (err, htmlData) {
-                        if (err) {
-                            return console.log(err);
-                        }
-                        $("textarea").sceditor('instance')[0].insert(htmlData);
-                    });
+                    loadFileIntoEditor(window.currFileName);
                 } else {
                     $("#divEditor").addClass('disabledbutton');
                 }
             }
         });
     }
+}
+
+function loadFileIntoEditor(filename) {
+    fs.readFile(filename, 'utf8', function (err, htmlData) {
+        if (err) {
+            return console.log(err);
+        }
+        var bodyStr = htmlData.replace(/^[\s\S]*<body.*?>|<\/body>[\s\S]*$/g, '');
+        $("textarea").sceditor('instance')[0].insert(bodyStr);
+        var iframe = document.getElementsByTagName("iframe")[0];
+        $(iframe).attr('sandbox', 'allow-scripts allow-same-origin');
+        $(iframe).attr('nwdisable', '');
+        var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+        var iframeDocHead = iframeDocument.getElementsByTagName('head')[0];
+        var currHeadVal = $(iframeDocHead).val();
+        var newHeadVal = currHeadVal + '<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [[\'$\',\'$\'], [\'\\\\(\',\'\\\\)\']]}});</script><script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>';
+        $(iframeDocHead).val(newHeadVal);
+    });
 }
 
 String.prototype.endsWith = function (suffix) {
@@ -133,7 +149,16 @@ function getTreeFromJson(json) {
 function saveIframeContents() {
     var iframe = document.getElementsByTagName("iframe")[0];
     var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-    var iframeDocBody = iframeDocument.getElementsByTagName('body')[0];
+    var iframeHtml = iframeDocument.getElementsByTagName('html')[0];
+    var bodyHtml = iframeHtml.getElementsByTagName('body')[0];
+    $(bodyHtml).removeAttr('contenteditable');
+    $(bodyHtml).removeAttr('dir');
+    var str = $(iframeHtml).prop('outerHTML');
+    var stream = fs.createWriteStream(window.currFileName);
+    stream.once('open', function(fd) {
+        stream.end(str);
+    });
+    loadFileIntoEditor(window.currFileName);
 }
 
 function getDirectories(srcpath) {
